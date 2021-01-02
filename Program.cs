@@ -12,18 +12,15 @@ namespace DecimalFuzzGenerator
         public Op Operation { get; set; }
 
         [Option('o', "output",
-            SetName = "outputDir",
             HelpText = "The directory to put the generated test output into.")]
         public string OutputDirectory { get; set; }
 
         [Option('s', "sample-size",
-            SetName = "sampleSize",
             Default = 10000,
             HelpText = "The size of the randomized output to generate.")]
         public int SampleSize { get; set; }
 
         [Option('c', "combination",
-            SetName = "combo",
             Default = "***",
             HelpText = "The bitwise combination to generate where we have hi/mid/lo for the dividend and the divisor.")]
         public string Combination { get; set; }
@@ -41,13 +38,19 @@ namespace DecimalFuzzGenerator
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed<Options>(o =>
                 {
+                    string outDir = $"{Path.GetFullPath(o.OutputDirectory)}{Path.DirectorySeparatorChar}";
+                    Console.WriteLine("Operation: {0}", o.Operation);
+                    Console.WriteLine("Output directory: {0}", outDir);
+                    Console.WriteLine("Sample Size: {0}", o.SampleSize);
+                    Console.WriteLine("Combination: {0}", o.Combination);
+                    
                     var generator = CombinationGenerator.Parse(o.Combination);
                     var data = generator.Generate(o.SampleSize);
                     foreach (var combo in data.Keys)
                     {
                         var values = data[combo];
                         string filename =
-                            $"{Path.GetFullPath(o.OutputDirectory)}{Path.DirectorySeparatorChar}{o.Operation}_{combo}.csv";
+                            $"{outDir}{o.Operation}_{combo}.csv";
 
                         // Write out the CSV header
                         using StreamWriter writer = new StreamWriter(filename);

@@ -10,11 +10,11 @@ namespace DecimalFuzzGenerator
         public bool Mid { get; }
         public bool Lo { get; }
 
-        internal Combination(bool hi, bool mid, bool lo)
+        internal Combination(bool lo, bool mid, bool hi)
         {
-            Hi = hi;
-            Mid = mid;
             Lo = lo;
+            Mid = mid;
+            Hi = hi;
         }
 
         public decimal GenerateBoundary()
@@ -34,7 +34,8 @@ namespace DecimalFuzzGenerator
             var hi = Hi ? random.Next() : 0;
             var negative = random.Next() % 2 == 0;
             var scale = (byte)random.Next(0, 29);
-            return new Decimal(lo, mid, hi, negative, scale);
+            var d = new Decimal(lo, mid, hi, negative, scale);
+            return d;
         }
 
         public override string ToString()

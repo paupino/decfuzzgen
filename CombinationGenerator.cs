@@ -28,9 +28,9 @@ namespace DecimalFuzzGenerator
                 bool currentLo = (combination & 0x1) != 0;
                 bool currentMid = (combination & 0x2) != 0;
                 bool currentHi = (combination & 0x4) != 0;
-                bool? requestedLo = values[0];
+                bool? requestedHi = values[0];
                 bool? requestedMid = values[1];
-                bool? requestedHi = values[2];
+                bool? requestedLo = values[2];
 
                 // Skip any that we need to
                 if (requestedLo != null)
