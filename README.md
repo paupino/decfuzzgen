@@ -1,6 +1,16 @@
-# rust-decimal-fuzzer
+# decfuzzgen
 
-Fuzzer for [Rust Decimal](https://github.com/paupino/rust-decimal) for test generation.
+Fuzzer to generate CSV based tests for decimal operations.
 
-This leverages other libraries, primarily [Decimal](https://github.com/alkis/decimal) which wraps the 
-[decNumber](http://speleotrove.com/decimal/decnumber.html) to assist with generation.
+## Usage
+
+```
+./decfuzzgen <op> --output <outputDir> [--sample-size <sampleSize>] [--combination <combo>] 
+```
+
+Arguments:
+* `op` - the decimal operation to output
+* `outputDir` - the directory to put test output
+* `sampleSize` - the size of the randomized output to generate. By default this is 10,000.
+* `combo` - the bitwise combination to generate. e.g. 100 will generate decimals with only
+   the high portion set.
