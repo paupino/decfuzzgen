@@ -28,7 +28,11 @@ namespace DecimalFuzzGenerator
 
     enum Op
     {
+        Add,
         Div,
+        Mul,
+        Rem,
+        Sub,
     }
 
     class Program
@@ -62,6 +66,16 @@ namespace DecimalFuzzGenerator
                             var tuple = values[i];
                             switch (o.Operation)
                             {
+                                case Op.Add:
+                                    try
+                                    {
+                                        result = tuple.Item1 + tuple.Item2;
+                                    }
+                                    catch (OverflowException)
+                                    {
+                                        error = "overflow";
+                                    }
+                                    break;
                                 case Op.Div:
                                     try
                                     {
@@ -76,6 +90,41 @@ namespace DecimalFuzzGenerator
                                         error = "overflow";
                                     }
 
+                                    break;
+                                case Op.Mul:
+                                    try
+                                    {
+                                        result = tuple.Item1 * tuple.Item2;
+                                    }
+                                    catch (OverflowException)
+                                    {
+                                        error = "overflow";
+                                    }
+                                    break;
+                                case Op.Rem:
+                                    try
+                                    {
+                                        result = tuple.Item1 % tuple.Item2;
+                                    }
+                                    catch (DivideByZeroException)
+                                    {
+                                        error = "divide_by_zero";
+                                    }
+                                    catch (OverflowException)
+                                    {
+                                        error = "overflow";
+                                    }
+
+                                    break;
+                                case Op.Sub:
+                                    try
+                                    {
+                                        result = tuple.Item1 - tuple.Item2;
+                                    }
+                                    catch (OverflowException)
+                                    {
+                                        error = "overflow";
+                                    }
                                     break;
                                 default:
                                     throw new ArgumentOutOfRangeException();
