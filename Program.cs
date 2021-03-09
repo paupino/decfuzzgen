@@ -24,6 +24,11 @@ namespace DecimalFuzzGenerator
             Default = "***",
             HelpText = "The bitwise combination to generate where we have hi/mid/lo for the dividend and the divisor.")]
         public string Combination { get; set; }
+        
+        [Option("overwrite",
+            Default = false,
+            HelpText = "If set and a file already exists, it will be overwritten.")]
+        public bool OverWrite { get; set; }
     }
 
     enum Op
@@ -55,10 +60,12 @@ namespace DecimalFuzzGenerator
                         var values = data[combo];
                         string filename =
                             $"{outDir}{o.Operation}_{combo}.csv";
+                        bool exists = File.Exists(filename);
 
                         // Write out the CSV header
-                        using StreamWriter writer = new StreamWriter(filename);
-                        writer.WriteLine("D1,D2,Result,Error");
+                        using StreamWriter writer = new StreamWriter(filename, !o.OverWrite);
+                        if (o.OverWrite || !exists) 
+                            writer.WriteLine("D1,D2,Result,Error");
                         for (int i = 0; i < values.Count; i++)
                         {
                             decimal result = 0;

@@ -5,7 +5,7 @@ Fuzzer to generate CSV based tests for decimal operations.
 ## Usage
 
 ```
-./decfuzzgen <op> --output <outputDir> [--sample-size <sampleSize>] [--combination <combo>] 
+./decfuzzgen <op> --output <outputDir> [--sample-size <sampleSize>] [--combination <combo>] [--overwrite]
 ```
 
 Arguments:
@@ -14,3 +14,4 @@ Arguments:
 * `sampleSize` - the size of the randomized output to generate. By default this is 10,000.
 * `combo` - the bitwise combination to generate. e.g. 100 will generate decimals with only
    the high portion set.
+* `overwrite` - whether to overwrite to an existing file. The default action is to append.
