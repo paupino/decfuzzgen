@@ -73,31 +73,33 @@ namespace DecimalFuzzGenerator
             }
         }
 
-        public Dictionary<Combination, List<Tuple<decimal, decimal>>> Generate(int size)
+        public List<Combination> Combinations 
         {
-            var dictionary = new Dictionary<Combination, List<Tuple<decimal, decimal>>>();
-
-            foreach (var combination in _combinations)
+            get
             {
-                // All are 0, so we can only have zero for this combination. Skip this, it's obvious.
-                if (!combination.Lo && !combination.Mid && !combination.Hi)
+                return _combinations;
+            }
+        }
+
+        public List<Tuple<decimal, decimal>> Generate(Combination combination, int size)
+        {
+            // All are 0, so we can only have zero for this combination. Skip this, it's obvious.
+            if (!combination.Lo && !combination.Mid && !combination.Hi)
+                return null;
+            
+            var numbers = new HashSet<Tuple<decimal, decimal>>();
+            for (int i = 0; i < size;)
+            {
+                var value1 = combination.Generate();
+                var value2 = combination.Generate();
+                var tuple = Tuple.Create(value1, value2);
+                if (numbers.Contains(tuple))
                     continue;
-                
-                var numbers = new List<Tuple<decimal, decimal>>();
-                for (int i = 0; i < size;)
-                {
-                    var value1 = combination.Generate();
-                    var value2 = combination.Generate();
-                    var tuple = Tuple.Create(value1, value2);
-                    if (numbers.Contains(tuple))
-                        continue;
-                    numbers.Add(tuple);
-                    i++;
-                }
-                dictionary.Add(combination, numbers);
+                numbers.Add(tuple);
+                i++;
             }
 
-            return dictionary;
+            return numbers.ToList();
         }
     }
 }

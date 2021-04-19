@@ -54,15 +54,24 @@ namespace DecimalFuzzGenerator
                     Console.WriteLine("Combination: {0}", o.Combination);
                     
                     var generator = CombinationGenerator.Parse(o.Combination);
-                    var data = generator.Generate(o.SampleSize);
-                    foreach (var combo in data.Keys)
+                    //Console.Write("Generating samples...");
+                    //var data = generator.Generate(o.SampleSize);
+                    //Console.WriteLine("Finished");
+                    foreach (var combo in generator.Combinations)
                     {
-                        var values = data[combo];
+                        Console.WriteLine("Generating {0} samples for {1}...", o.SampleSize, combo);
+                        var values = generator.Generate(combo, o.SampleSize);
+                        if (values == null) 
+                        {
+                            Console.WriteLine("Skipping since no samples generated.");
+                            continue;
+                        }
                         string filename =
                             $"{outDir}{o.Operation}_{combo}.csv";
                         bool exists = File.Exists(filename);
 
                         // Write out the CSV header
+                        Console.WriteLine("Writing to {0}...", filename);
                         using StreamWriter writer = new StreamWriter(filename, !o.OverWrite);
                         if (o.OverWrite || !exists) 
                             writer.WriteLine("D1,D2,Result,Error");
