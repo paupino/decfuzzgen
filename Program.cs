@@ -53,100 +53,103 @@ namespace DecimalFuzzGenerator
                     Console.WriteLine("Sample Size: {0}", o.SampleSize);
                     Console.WriteLine("Combination: {0}", o.Combination);
                     
-                    var generator = CombinationGenerator.Parse(o.Combination);
+                    var lhsGenerator = CombinationGenerator.Parse(o.Combination);
+                    var rhsGenerator = CombinationGenerator.Parse("***");
                     //Console.Write("Generating samples...");
                     //var data = generator.Generate(o.SampleSize);
                     //Console.WriteLine("Finished");
-                    foreach (var combo in generator.Combinations)
+                    foreach (var lhsCombo in lhsGenerator.Combinations)
                     {
-                        Console.WriteLine("Generating {0} samples for {1}...", o.SampleSize, combo);
-                        var values = generator.Generate(combo, o.SampleSize);
-                        if (values == null) 
+                        foreach (var rhsCombo in rhsGenerator.Combinations)
                         {
-                            Console.WriteLine("Skipping since no samples generated.");
-                            continue;
-                        }
-                        string filename =
-                            $"{outDir}{o.Operation}_{combo}.csv";
-                        bool exists = File.Exists(filename);
+                            if (lhsCombo.IsZero && rhsCombo.IsZero)
+                                continue;
+                            Console.WriteLine("Generating {0} samples for {1}_{2}...", o.SampleSize, lhsCombo, rhsCombo);
+                            var lhsValues = lhsGenerator.Generate(lhsCombo, o.SampleSize);
+                            var rhsValues = rhsGenerator.Generate(rhsCombo, o.SampleSize);
+                            string filename =
+                                $"{outDir}{o.Operation}_{lhsCombo}_{rhsCombo}.csv";
+                            bool exists = File.Exists(filename);
 
-                        // Write out the CSV header
-                        Console.WriteLine("Writing to {0}...", filename);
-                        using StreamWriter writer = new StreamWriter(filename, !o.OverWrite);
-                        if (o.OverWrite || !exists) 
-                            writer.WriteLine("D1,D2,Result,Error");
-                        for (int i = 0; i < values.Count; i++)
-                        {
-                            decimal result = 0;
-                            string error = "";
-                            var tuple = values[i];
-                            switch (o.Operation)
+                            // Write out the CSV header
+                            Console.WriteLine("Writing to {0}...", filename);
+                            using StreamWriter writer = new StreamWriter(filename, !o.OverWrite);
+                            if (o.OverWrite || !exists) 
+                                writer.WriteLine("D1,D2,Result,Error");
+                            for (int i = 0; i < Math.Min(lhsValues.Count, rhsValues.Count); i++)
                             {
-                                case Op.Add:
-                                    try
-                                    {
-                                        result = tuple.Item1 + tuple.Item2;
-                                    }
-                                    catch (OverflowException)
-                                    {
-                                        error = "overflow";
-                                    }
-                                    break;
-                                case Op.Div:
-                                    try
-                                    {
-                                        result = tuple.Item1 / tuple.Item2;
-                                    }
-                                    catch (DivideByZeroException)
-                                    {
-                                        error = "divide_by_zero";
-                                    }
-                                    catch (OverflowException)
-                                    {
-                                        error = "overflow";
-                                    }
+                                decimal result = 0;
+                                string error = "";
+                                var lhs = lhsValues[i];
+                                var rhs = rhsValues[i];
+                                switch (o.Operation)
+                                {
+                                    case Op.Add:
+                                        try
+                                        {
+                                            result = lhs + rhs;
+                                        }
+                                        catch (OverflowException)
+                                        {
+                                            error = "overflow";
+                                        }
+                                        break;
+                                    case Op.Div:
+                                        try
+                                        {
+                                            result = lhs / rhs;
+                                        }
+                                        catch (DivideByZeroException)
+                                        {
+                                            error = "divide_by_zero";
+                                        }
+                                        catch (OverflowException)
+                                        {
+                                            error = "overflow";
+                                        }
 
-                                    break;
-                                case Op.Mul:
-                                    try
-                                    {
-                                        result = tuple.Item1 * tuple.Item2;
-                                    }
-                                    catch (OverflowException)
-                                    {
-                                        error = "overflow";
-                                    }
-                                    break;
-                                case Op.Rem:
-                                    try
-                                    {
-                                        result = tuple.Item1 % tuple.Item2;
-                                    }
-                                    catch (DivideByZeroException)
-                                    {
-                                        error = "divide_by_zero";
-                                    }
-                                    catch (OverflowException)
-                                    {
-                                        error = "overflow";
-                                    }
+                                        break;
+                                    case Op.Mul:
+                                        try
+                                        {
+                                            result = lhs * rhs;
+                                        }
+                                        catch (OverflowException)
+                                        {
+                                            error = "overflow";
+                                        }
+                                        break;
+                                    case Op.Rem:
+                                        try
+                                        {
+                                            result = lhs % rhs;
+                                        }
+                                        catch (DivideByZeroException)
+                                        {
+                                            error = "divide_by_zero";
+                                        }
+                                        catch (OverflowException)
+                                        {
+                                            error = "overflow";
+                                        }
 
-                                    break;
-                                case Op.Sub:
-                                    try
-                                    {
-                                        result = tuple.Item1 - tuple.Item2;
-                                    }
-                                    catch (OverflowException)
-                                    {
-                                        error = "overflow";
-                                    }
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException();
+                                        break;
+                                    case Op.Sub:
+                                        try
+                                        {
+                                            result = lhs - rhs;
+                                        }
+                                        catch (OverflowException)
+                                        {
+                                            error = "overflow";
+                                        }
+                                        break;
+                                    default:
+                                        throw new ArgumentOutOfRangeException();
+                                }
+
+                                writer.WriteLine($"{lhs},{rhs},{result},{error}");
                             }
-
-                            writer.WriteLine($"{tuple.Item1},{tuple.Item2},{result},{error}");
                         }
                     }
                 });

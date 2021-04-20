@@ -81,21 +81,19 @@ namespace DecimalFuzzGenerator
             }
         }
 
-        public List<Tuple<decimal, decimal>> Generate(Combination combination, int size)
+        public List<decimal> Generate(Combination combination, int size)
         {
             // All are 0, so we can only have zero for this combination. Skip this, it's obvious.
             if (!combination.Lo && !combination.Mid && !combination.Hi)
-                return null;
+                return new List<decimal>(new decimal[size]);
             
-            var numbers = new HashSet<Tuple<decimal, decimal>>();
+            var numbers = new HashSet<decimal>();
             for (int i = 0; i < size;)
             {
-                var value1 = combination.Generate();
-                var value2 = combination.Generate();
-                var tuple = Tuple.Create(value1, value2);
-                if (numbers.Contains(tuple))
+                var value = combination.Generate();
+                if (numbers.Contains(value))
                     continue;
-                numbers.Add(tuple);
+                numbers.Add(value);
                 i++;
             }
 

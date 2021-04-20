@@ -38,6 +38,8 @@ namespace DecimalFuzzGenerator
             return d;
         }
 
+        public bool IsZero => !Lo && !Mid && !Hi;
+
         public override string ToString()
         {
             StringBuilder text = new StringBuilder();
